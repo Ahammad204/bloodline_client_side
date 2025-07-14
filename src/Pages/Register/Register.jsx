@@ -3,11 +3,14 @@ import toast from "react-hot-toast";
 import axiosPublic from "../../utils/axiosPublic";
 import Lottie from "lottie-react";
 import registerAnimation from "../../assets/register.json";
+import useAuth from "../../Hooks/UseAuth";
+import axios from "axios";
 
 const Register = () => {
   const [districts, setDistricts] = useState([]);
   const [upazilas, setUpazilas] = useState([]);
   const [selectedDistrictId, setSelectedDistrictId] = useState("");
+  const {register} = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -69,7 +72,7 @@ const Register = () => {
       const imageData = new FormData();
       imageData.append("image", avatar);
 
-      const imgbbRes = await axiosPublic.post(
+      const imgbbRes = await axios.post(
         `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY}`,
         imageData
       );
@@ -89,8 +92,8 @@ const Register = () => {
         status: "active",
       };
 
-      const res = await axiosPublic.post("/api/register", userData);
-
+    //   const res = await axiosPublic.post("/api/register", userData);
+    const res= await register(userData);
       if (res.status === 201 || res.status === 200) {
         toast.success("Registration successful!");
         setFormData({
@@ -172,7 +175,10 @@ const Register = () => {
             name="district"
             onChange={(e) => {
               handleChange(e);
-              setSelectedDistrictId(e.target.value);
+              const selected = districts.find(
+                (dist) => dist.name === e.target.value
+              );
+              setSelectedDistrictId(selected?.id);
             }}
             value={formData.district}
             required
@@ -180,7 +186,7 @@ const Register = () => {
           >
             <option value="">Select District</option>
             {districts.map((d) => (
-              <option key={d.id} value={d.id}>
+              <option key={d.id} value={d.name}>
                 {d.name}
               </option>
             ))}
