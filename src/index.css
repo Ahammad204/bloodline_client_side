@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+.gradient-red {
+  background: linear-gradient(135deg, #D7263D 0%, #FF5C5C 50%, #FF9A9A 100%);
+  color: white; 
+  border: none; 
+}
+
