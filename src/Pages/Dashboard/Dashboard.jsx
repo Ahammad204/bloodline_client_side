@@ -5,16 +5,18 @@ import useAuth from "../../Hooks/UseAuth";
 import { CgProfile } from "react-icons/cg";
 import useAdmin from "../../Hooks/useAdmin";
 import Loading from "../../Shared/Loading/Loading";
+import useVolunteer from "../../Hooks/useVolunteer";
 
 
 const Dashboard = () => {
   // const [cart] = useCart();
 
    const [isAdmin, isAdminLoading] = useAdmin();
+   const [isVolunteer, isVolunteerLoading] = useVolunteer();
 
   const { user } = useAuth();
 
-  if(isAdminLoading){
+  if(isAdminLoading || isVolunteerLoading){
     return <Loading></Loading>
   }
 
@@ -56,6 +58,17 @@ const Dashboard = () => {
           ) : (
             <></>
           )}
+             {isAdmin || isVolunteer ? (
+            <>
+               <li ><NavLink className=" mb-3 flex justify-center text-center w-full"  to="/dashboard/volunteer">Volunteer Home</NavLink></li>
+              <hr />
+              
+              <div className="divider"></div>
+            </>
+          ) : (
+            <></>
+          )}
+          
           {/* shared nav links */}
           <li ><NavLink className=" mb-3 flex justify-center text-center w-full"  to="/dashboard">Donor Home</NavLink></li>
           <hr />
