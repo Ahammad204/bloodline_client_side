@@ -8,6 +8,7 @@ import Dashboard from "../Pages/Dashboard/Dashboard";
 import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 import DashboardProfile from "../Pages/Dashboard/DashboardProfile/DashboardProfile";
 import CreateDonationRequest from "../Pages/Dashboard/createDonationRequest/createDonationRequest";
+import EditDonationRequest from "../Pages/Dashboard/EditDonationRequestPage/EditDonationRequestPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,9 @@ export const router = createBrowserRouter([
       },{
         path:"/dashboard/create-donation-request",
         element:<CreateDonationRequest/>
+      },{
+        path:"/dashboard/edit-donation-request/:id",
+        element: <EditDonationRequest/>
       }
     ]
   }
