@@ -1,14 +1,20 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import { FaEdit, FaTrash, FaUpload, FaUndo } from "react-icons/fa";
 import Swal from "sweetalert2";
+import useAdmin from "../../../Hooks/useAdmin";
+import useVolunteer from "../../../Hooks/useVolunteer";
+import Loading from "../../../Shared/Loading/Loading";
 
 const ContentManagementPage = () => {
   const axiosSecure = useAxiosSecure();
   const [blogs, setBlogs] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [isAdmin, isAdminLoading] = useAdmin();
+  const [isVolunteer, isVolunteerLoading] = useVolunteer();
   const [page, setPage] = useState(1);
   const blogsPerPage = 5;
 
@@ -19,7 +25,7 @@ const ContentManagementPage = () => {
         setBlogs(res.data);
       } catch (err) {
         toast.error("Failed to fetch blogs");
-        console.log(err)
+        console.log(err);
       }
     };
     fetchBlogs();
@@ -28,7 +34,9 @@ const ContentManagementPage = () => {
   const handleStatusChange = async (id, status) => {
     try {
       await axiosSecure.patch(`/blogs/${id}`, { status });
-      toast.success(`Blog ${status === "published" ? "published" : "unpublished"}`);
+      toast.success(
+        `Blog ${status === "published" ? "published" : "unpublished"}`
+      );
       setBlogs((prev) =>
         prev.map((b) => (b._id === id ? { ...b, status } : b))
       );
@@ -36,7 +44,6 @@ const ContentManagementPage = () => {
       toast.error("Failed to update status");
     }
   };
-
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -57,7 +64,7 @@ const ContentManagementPage = () => {
         } catch (err) {
           toast.error("Failed to delete blog");
           Swal.fire("Error!", "Something went wrong!", "error");
-          console.log(err)
+          console.log(err);
         }
       }
     });
@@ -71,10 +78,16 @@ const ContentManagementPage = () => {
     page * blogsPerPage
   );
 
+  if (isAdminLoading || isVolunteerLoading) {
+    return <Loading></Loading>;
+  }
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-[#D7263D]">Content Management</h2>
+        <h2 className="text-3xl font-bold text-[#D7263D]">
+          Content Management
+        </h2>
         <Link to="/dashboard/content-management/add-blog">
           <button className="btn btn-primary gradient-red">Add Blog</button>
         </Link>
@@ -131,17 +144,17 @@ const ContentManagementPage = () => {
                   </span>
                 </td>
                 <td>{new Date(blog.createdAt).toLocaleDateString()}</td>
-                <td className="flex gap-2">
-                  {blog.status === "draft" ? (
+                <td className="flex flex-wrap gap-2">
+                  {/* Publish / Unpublish */}
+                  {isAdmin && blog.status === "draft" && (
                     <button
-                      onClick={() =>
-                        handleStatusChange(blog._id, "published")
-                      }
+                      onClick={() => handleStatusChange(blog._id, "published")}
                       className="btn btn-xs btn-success gradient-red"
                     >
                       <FaUpload /> Publish
                     </button>
-                  ) : (
+                  )}
+                  {isAdmin && blog.status === "published" && (
                     <button
                       onClick={() => handleStatusChange(blog._id, "draft")}
                       className="btn btn-xs btn-warning gradient-red"
@@ -150,18 +163,24 @@ const ContentManagementPage = () => {
                     </button>
                   )}
 
-                  <Link to={`/dashboard/content-management/edit-blog/${blog._id}`}>
+                  {/* Edit (Visible to all roles) */}
+                  <Link
+                    to={`/dashboard/content-management/edit-blog/${blog._id}`}
+                  >
                     <button className="btn btn-xs btn-info gradient-red">
                       <FaEdit />
                     </button>
                   </Link>
 
-                  <button
-                    onClick={() => handleDelete(blog._id)}
-                    className="btn btn-xs btn-error gradient-red"
-                  >
-                    <FaTrash />
-                  </button>
+                  {/* Delete (Admin only) */}
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleDelete(blog._id)}
+                      className="btn btn-xs btn-error gradient-red"
+                    >
+                      <FaTrash />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

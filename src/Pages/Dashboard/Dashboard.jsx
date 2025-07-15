@@ -68,6 +68,12 @@ const Dashboard = () => {
                   All Blood Donation Request
                 </NavLink>
               </li>
+                <li>
+                <NavLink to="/dashboard/content-management">
+                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  Content Management
+                </NavLink>
+              </li>
               
               <div className="divider"></div>
             </>
