@@ -62,6 +62,12 @@ const Dashboard = () => {
             <>
                <li ><NavLink className=" mb-3 flex justify-center text-center w-full"  to="/dashboard/volunteer">Volunteer Home</NavLink></li>
               <hr />
+              <li>
+                <NavLink to="/dashboard/all-blood-donation-request">
+                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  All Blood Donation Request
+                </NavLink>
+              </li>
               
               <div className="divider"></div>
             </>

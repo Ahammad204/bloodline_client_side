@@ -3,9 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import useAdmin from "../../../Hooks/useAdmin";
+import useVolunteer from "../../../Hooks/useVolunteer";
+import Loading from "../../../Shared/Loading/Loading";
 
 const AllBloodDonationRequestPage = () => {
   const axiosSecure = useAxiosSecure();
+  const [isAdmin, isAdminLoading] = useAdmin();
+  const [isVolunteer, isVolunteerLoading] = useVolunteer();
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState("all");
@@ -75,6 +80,10 @@ const AllBloodDonationRequestPage = () => {
   const currentRequests = filteredRequests.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
 
+  if (isAdminLoading || isVolunteerLoading) {
+    return <Loading></Loading>;
+  }
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-[#D7263D] mb-4">
@@ -129,16 +138,15 @@ const AllBloodDonationRequestPage = () => {
                   {req.status === "inprogress" && req.donor ? (
                     <>
                       <p>{req.donor.name}</p>
-                      <p className="text-sm text-gray-500">
-                        {req.donor.email}
-                      </p>
+                      <p className="text-sm text-gray-500">{req.donor.email}</p>
                     </>
                   ) : (
                     "-"
                   )}
                 </td>
                 <td className="space-x-1">
-                  {req.status === "inprogress" && (
+                  {/* Volunteer can only update status when inprogress */}
+                  {isVolunteer && req.status === "inprogress" && (
                     <>
                       <button
                         onClick={() => handleStatusUpdate(req._id, "done")}
@@ -147,29 +155,55 @@ const AllBloodDonationRequestPage = () => {
                         Done
                       </button>
                       <button
-                        onClick={() =>
-                          handleStatusUpdate(req._id, "canceled")
-                        }
+                        onClick={() => handleStatusUpdate(req._id, "canceled")}
                         className="btn btn-xs btn-error gradient-red"
                       >
                         Cancel
                       </button>
                     </>
                   )}
-                  <button
-                    onClick={() =>
-                      navigate(`/dashboard/edit-donation-request/${req._id}`)
-                    }
-                    className="btn btn-xs btn-warning gradient-red"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(req._id)}
-                    className="btn btn-xs btn-outline btn-error gradient-red"
-                  >
-                    Delete
-                  </button>
+
+                  {/* Admin can see all options */}
+                  {isAdmin && (
+                    <>
+                      {req.status === "inprogress" && (
+                        <>
+                          <button
+                            onClick={() => handleStatusUpdate(req._id, "done")}
+                            className="btn btn-xs btn-success gradient-red"
+                          >
+                            Done
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(req._id, "canceled")
+                            }
+                            className="btn btn-xs btn-error gradient-red"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/dashboard/edit-donation-request/${req._id}`
+                          )
+                        }
+                        className="btn btn-xs btn-warning gradient-red"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(req._id)}
+                        className="btn btn-xs btn-outline btn-error gradient-red"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
+
+                  {/* Everyone can view */}
                   <Link to={`/dashboard/donation-request/${req._id}`}>
                     <button className="btn btn-xs btn-primary gradient-red">
                       View
