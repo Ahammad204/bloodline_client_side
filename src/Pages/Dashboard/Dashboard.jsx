@@ -3,21 +3,27 @@ import { NavLink, Outlet } from "react-router-dom";
 import { FaHandHoldingDollar, FaPaw } from "react-icons/fa6";
 import useAuth from "../../Hooks/UseAuth";
 import { CgProfile } from "react-icons/cg";
+import useAdmin from "../../Hooks/useAdmin";
+import Loading from "../../Shared/Loading/Loading";
 
 
 const Dashboard = () => {
   // const [cart] = useCart();
 
-//   const [isAdmin] = useAdmin();
+   const [isAdmin, isAdminLoading] = useAdmin();
 
   const { user } = useAuth();
+
+  if(isAdminLoading){
+    return <Loading></Loading>
+  }
 
   return (
     <div className="md:flex">
       {/* dashboard side bar */}
       <div className="md:w-64 min-h-screen  gradient-red text-white">
         <ul className="menu p-4">
-          {/* {isAdmin ? (
+          {isAdmin ? (
             <>
               <li className="text-center mb-3">Admin Home</li>
               <hr />
@@ -43,9 +49,9 @@ const Dashboard = () => {
             </>
           ) : (
             <></>
-          )} */}
+          )}
           {/* shared nav links */}
-          <li className="text-center mb-3">Donor Home</li>
+          <li ><NavLink className=" mb-3 flex justify-center text-center w-full"  to="/dashboard">Donor Home</NavLink></li>
           <hr />
           <li>
             <NavLink to="/">
