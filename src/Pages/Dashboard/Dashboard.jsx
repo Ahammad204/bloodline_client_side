@@ -34,9 +34,9 @@ const Dashboard = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/allPets">
-                  <FaPaw></FaPaw>
-                  All Pets
+                <NavLink to="/dashboard/all-blood-donation-request">
+                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  All Blood Donation Request Page
                 </NavLink>
               </li>
               <li>
