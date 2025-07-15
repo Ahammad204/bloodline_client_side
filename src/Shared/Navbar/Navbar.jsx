@@ -37,9 +37,7 @@ const Navbar = () => {
           Home
         </NavLink>
       </li>
-      {user && (
-        <>
-          <li>
+         <li>
             <NavLink to="/donation-request" className={getNavLinkClass}>
               Donation Request
             </NavLink>
@@ -54,27 +52,7 @@ const Navbar = () => {
               Find Donor
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/Search" className={getNavLinkClass}>
-              Find Donor
-            </NavLink>
-          </li>
-
-          {/* {user.role === "admin" && (
-            <>
-              <li>
-                <NavLink to="/blog">Add Book</NavLink>
-              </li>
-              <li>
-                <NavLink to="/allBook">All Book</NavLink>
-              </li>
-              <li>
-                <NavLink to="/addCategory">Add Category</NavLink>
-              </li>
-            </>
-          )} */}
-        </>
-      )}
+          
     </>
   );
 

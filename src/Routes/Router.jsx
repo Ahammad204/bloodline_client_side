@@ -17,6 +17,7 @@ import AllBloodDonationRequestPage from "../Pages/Dashboard/AllBloodDonationRequ
 import ContentManagementPage from "../Pages/Dashboard/ContentManagementPage/ContentManagementPage";
 import AddBlogPage from "../Pages/Dashboard/AddBlogPage/AddBlogPage";
 import EditContent from "../Pages/Dashboard/EditContent/EditContent";
+import Search from "../Pages/SearchPage/Search";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,9 @@ export const router = createBrowserRouter([
       },{
         path:"/register",
         element:<Register></Register>
+      },{
+        path:"/search",
+        element:<Search/>
       }
     ]
   },{
