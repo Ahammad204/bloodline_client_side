@@ -61,9 +61,9 @@ const Dashboard = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard/addedPet">
+            <NavLink to="/dashboard/create-donation-request">
               <FaPaw></FaPaw>
-              My Added Pets{" "}
+              Create donation request
             </NavLink>
           </li>
           <li>

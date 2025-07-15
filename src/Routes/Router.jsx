@@ -7,6 +7,7 @@ import Error from "../Pages/Error/Error";
 import Dashboard from "../Pages/Dashboard/Dashboard";
 import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 import DashboardProfile from "../Pages/Dashboard/DashboardProfile/DashboardProfile";
+import CreateDonationRequest from "../Pages/Dashboard/createDonationRequest/createDonationRequest";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,9 @@ export const router = createBrowserRouter([
       },{
         path:"/dashboard/profile",
         element:<DashboardProfile/>
+      },{
+        path:"/dashboard/create-donation-request",
+        element:<CreateDonationRequest/>
       }
     ]
   }
