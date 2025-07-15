@@ -14,26 +14,27 @@ const AdminDashboard = () => {
     totalRequests: 0,
   });
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [usersRes, requestsRes] = await Promise.all([
-          axiosSecure.get("/users"),
-          axiosSecure.get("/donation-requests"),
-        ]);
+useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      const [usersRes, requestsRes, fundingRes] = await Promise.all([
+        axiosSecure.get("/users"),
+        axiosSecure.get("/donation-requests"),
+        axiosSecure.get("/funds/total"),
+      ]);
 
-        setStats({
-          totalUsers: usersRes.data.length,
-          totalFunding: 17500, // Temporary value
-          totalRequests: requestsRes.data.length,
-        });
-      } catch (err) {
-        console.error("Failed to fetch stats:", err);
-      }
-    };
+      setStats({
+        totalUsers: usersRes.data.length,
+        totalFunding: fundingRes.data.totalAmount, 
+        totalRequests: requestsRes.data.length,
+      });
+    } catch (err) {
+      console.error("Failed to fetch stats:", err);
+    }
+  };
 
-    fetchStats();
-  }, [axiosSecure]);
+  fetchStats();
+}, [axiosSecure]);
 
   return (
     <div className="p-6">

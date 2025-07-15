@@ -109,24 +109,7 @@ const Dashboard = () => {
               My Donation Request
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/dashboard/createDonationCampaign">
-              <FaHandHoldingDollar></FaHandHoldingDollar>
-              Create Donation Campaign
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/addedDonation">
-              <FaHandHoldingDollar></FaHandHoldingDollar>
-              My Donation Campaign
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/myDonation">
-              <FaHandHoldingDollar></FaHandHoldingDollar>
-              My Donation{" "}
-            </NavLink>
-          </li>
+         
         </ul>
       </div>
       {/* dashboard content */}
