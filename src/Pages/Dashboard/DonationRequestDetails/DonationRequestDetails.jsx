@@ -4,8 +4,13 @@ import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import useAuth from "../../../Hooks/UseAuth";
 import {
-  FaUser, FaMapMarkerAlt, FaTint, FaHospitalAlt, FaRegClock,
+  FaUser,
+  FaMapMarkerAlt,
+  FaTint,
+  FaHospitalAlt,
+  FaRegClock,
 } from "react-icons/fa";
+import Loading from "../../../Shared/Loading/Loading";
 
 const DonationRequestDetails = () => {
   const { id } = useParams();
@@ -32,11 +37,16 @@ const DonationRequestDetails = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "pending": return "bg-yellow-100 text-yellow-800";
-      case "inprogress": return "bg-blue-100 text-blue-800";
-      case "done": return "bg-green-100 text-green-800";
-      case "canceled": return "bg-red-100 text-red-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "inprogress":
+        return "bg-blue-100 text-blue-800";
+      case "done":
+        return "bg-green-100 text-green-800";
+      case "canceled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -63,8 +73,16 @@ const DonationRequestDetails = () => {
     }
   };
 
-  if (loading) return <div className="text-center mt-10">Loading...</div>;
-  if (!request) return <div className="text-center mt-10 text-red-500">Request not found.</div>;
+  if (loading)
+    return (
+      <div className="text-center mt-10">
+        <Loading />
+      </div>
+    );
+  if (!request)
+    return (
+      <div className="text-center mt-10 text-red-500">Request not found.</div>
+    );
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-4 sm:p-8">
@@ -81,28 +99,63 @@ const DonationRequestDetails = () => {
       <div className="bg-white shadow-lg rounded-lg p-6 space-y-5">
         <div className="grid sm:grid-cols-2 gap-6 text-gray-800">
           {/* Fields */}
-          <Detail icon={<FaUser />} label="Recipient" value={request.recipientName} />
-          <Detail icon={<FaTint />} label="Blood Group" value={request.bloodGroup} bold />
-          <Detail icon={<FaMapMarkerAlt />} label="Location" value={`${request.district}, ${request.upazila}`} />
-          <Detail icon={<FaHospitalAlt />} label="Hospital" value={`${request.hospitalName}\n${request.address}`} />
-          <Detail icon={<FaRegClock />} label="Scheduled Time" value={`${request.donationDate} at ${request.donationTime}`} />
-          <Detail icon={"🩸"} label="Status" value={
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(request.status)}`}>
-              {request.status}
-            </span>
-          } />
+          <Detail
+            icon={<FaUser />}
+            label="Recipient"
+            value={request.recipientName}
+          />
+          <Detail
+            icon={<FaTint />}
+            label="Blood Group"
+            value={request.bloodGroup}
+            bold
+          />
+          <Detail
+            icon={<FaMapMarkerAlt />}
+            label="Location"
+            value={`${request.district}, ${request.upazila}`}
+          />
+          <Detail
+            icon={<FaHospitalAlt />}
+            label="Hospital"
+            value={`${request.hospitalName}\n${request.address}`}
+          />
+          <Detail
+            icon={<FaRegClock />}
+            label="Scheduled Time"
+            value={`${request.donationDate} at ${request.donationTime}`}
+          />
+          <Detail
+            icon={"🩸"}
+            label="Status"
+            value={
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                  request.status
+                )}`}
+              >
+                {request.status}
+              </span>
+            }
+          />
         </div>
 
         <div>
           <p className="font-semibold mb-1 text-[#D7263D]">Request Message:</p>
-          <p className="bg-gray-100 p-4 rounded-lg text-sm">{request.requestMessage}</p>
+          <p className="bg-gray-100 p-4 rounded-lg text-sm">
+            {request.requestMessage}
+          </p>
         </div>
 
         {request.donor && (
           <div className="border-t pt-5 mt-5">
             <p className="font-semibold text-[#D7263D] mb-2">Donor Info:</p>
-            <p><strong>Name:</strong> {request.donor.name}</p>
-            <p><strong>Email:</strong> {request.donor.email}</p>
+            <p>
+              <strong>Name:</strong> {request.donor.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {request.donor.email}
+            </p>
           </div>
         )}
 
@@ -121,9 +174,11 @@ const DonationRequestDetails = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[#f5c0c06c] bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-xl font-semibold text-[#D7263D] mb-4">Confirm Donation</h3>
+            <h3 className="text-xl font-semibold text-[#D7263D] mb-4">
+              Confirm Donation
+            </h3>
             <div className="space-y-3">
               <input
                 type="text"
@@ -139,8 +194,18 @@ const DonationRequestDetails = () => {
               />
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowModal(false)} className="btn btn-outline btn-sm">Cancel</button>
-              <button onClick={handleDonate} className="btn bg-[#D7263D] text-white btn-sm">Confirm</button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="btn btn-outline btn-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDonate}
+                className="btn bg-[#D7263D] text-white btn-sm"
+              >
+                Confirm
+              </button>
             </div>
           </div>
         </div>

@@ -18,6 +18,7 @@ import ContentManagementPage from "../Pages/Dashboard/ContentManagementPage/Cont
 import AddBlogPage from "../Pages/Dashboard/AddBlogPage/AddBlogPage";
 import EditContent from "../Pages/Dashboard/EditContent/EditContent";
 import Search from "../Pages/SearchPage/Search";
+import DonationRequest from "../Pages/DonationRequest/DonationRequest";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,12 @@ export const router = createBrowserRouter([
       },{
         path:"/search",
         element:<Search/>
+      },{
+        path:"/donation-request",
+        element:<DonationRequest/>
+      },{
+        path:"/donation-request/:id",
+        element:<DonationRequestDetails/>
       }
     ]
   },{

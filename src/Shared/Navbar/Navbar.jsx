@@ -37,22 +37,21 @@ const Navbar = () => {
           Home
         </NavLink>
       </li>
-         <li>
-            <NavLink to="/donation-request" className={getNavLinkClass}>
-              Donation Request
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/blog" className={getNavLinkClass}>
-              Blog
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/Search" className={getNavLinkClass}>
-              Find Donor
-            </NavLink>
-          </li>
-          
+      <li>
+        <NavLink to="/Search" className={getNavLinkClass}>
+          Find Donor
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/donation-request" className={getNavLinkClass}>
+          Donation Request
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/blog" className={getNavLinkClass}>
+          Blog
+        </NavLink>
+      </li>
     </>
   );
 
