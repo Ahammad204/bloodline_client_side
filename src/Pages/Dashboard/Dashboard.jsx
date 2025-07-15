@@ -25,7 +25,7 @@ const Dashboard = () => {
         <ul className="menu p-4">
           {isAdmin ? (
             <>
-              <li className="text-center mb-3">Admin Home</li>
+               <li ><NavLink className=" mb-3 flex justify-center text-center w-full"  to="/dashboard/admin">Admin Home</NavLink></li>
               <hr />
               <li>
                 <NavLink to="/dashboard/users">
