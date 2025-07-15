@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useAxiosSecure from "../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import Loading from "../../Shared/Loading/Loading";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Search = () => {
   const axiosSecure = useAxiosSecure();
 
   const [bloodGroup, setBloodGroup] = useState("");
-  const [districtId, setDistrictId] = useState(""); // store id
+  const [districtId, setDistrictId] = useState("");
   const [districts, setDistricts] = useState([]);
   const [upazilas, setUpazilas] = useState([]);
   const [filteredUpazilas, setFilteredUpazilas] = useState([]);
@@ -57,6 +59,53 @@ const Search = () => {
       setLoading(false);
     }
   };
+
+  const pdfRef = useRef();
+
+
+
+const downloadPDF = () => {
+  if (donors.length === 0) {
+    toast.error("No donors to download");
+    return;
+  }
+
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Blood Donor Search Results", 14, 20);
+
+  // Table Headers
+  const head = [["Name", "Email", "Blood Group", "District", "Upazila"]];
+
+  // Table Rows
+  const rows = donors.map((donor) => [
+    donor.name,
+    donor.email,
+    donor.bloodGroup,
+    donor.district,
+    donor.upazila,
+  ]);
+
+  autoTable(doc, {
+    startY: 30,
+    head,
+    body: rows,
+    styles: {
+      halign: "left",
+      cellPadding: 3,
+    },
+    headStyles: {
+      fillColor: [215, 38, 61], // Bloodline Red
+      textColor: [255, 255, 255],
+      fontStyle: "bold",
+    },
+  });
+
+  doc.save("donor-search-results.pdf");
+};
+
+
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -126,24 +175,31 @@ const Search = () => {
             No donor found for your selected area and blood group.
           </div>
         )}
-
         {donors.length > 0 && (
           <>
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">
-              Found {donors.length} donor{donors.length > 1 ? "s" : ""}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">
+                Found {donors.length} donor{donors.length > 1 ? "s" : ""}
+              </h3>
+              <button
+                className="btn btn-outline btn-sm text-red-600 border-red-400"
+                onClick={downloadPDF}
+              >
+                Download PDF
+              </button>
+            </div>
+
+            <div ref={pdfRef} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {donors.map((donor) => (
                 <div
                   key={donor._id}
-                  className="p-5 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300 border border-gray-100 flex gap-4 items-center"
+                  className="p-5 bg-white rounded-lg shadow border border-gray-100 flex gap-4 items-center"
                 >
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 rounded-full bg-[#D7263D] text-white flex items-center justify-center font-bold text-lg">
                       {donor.bloodGroup}
                     </div>
                   </div>
-
                   <div className="flex-grow">
                     <h4 className="text-lg font-semibold text-gray-800">
                       {donor.name}

@@ -48,6 +48,8 @@ const FeaturedSection = () => {
           <div
             key={index}
             className="p-6 bg-white rounded-xl shadow hover:shadow-md transition"
+            data-aos="fade-up"
+            data-aos-delay={index * 100} 
           >
             <div className="mb-4">{feature.icon}</div>
             <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
