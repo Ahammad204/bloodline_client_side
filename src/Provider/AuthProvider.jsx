@@ -9,6 +9,8 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  console.log(user)
+
   //  Register a new user
   const register = async (userData) => {
     try {
@@ -31,7 +33,7 @@ const AuthProvider = ({ children }) => {
       const res = await axiosPublic.post("/api/login", { email, password }, { withCredentials: true });
       if (res.status === 200) {
         setUser(res.data.user);
-        toast.success("Login successful");
+    
       }
     } catch (err) {
       toast.error("Login failed");

@@ -5,12 +5,14 @@ import Lottie from "lottie-react";
 import registerAnimation from "../../assets/register.json";
 import useAuth from "../../Hooks/UseAuth";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [districts, setDistricts] = useState([]);
   const [upazilas, setUpazilas] = useState([]);
   const [selectedDistrictId, setSelectedDistrictId] = useState("");
   const {register} = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -96,6 +98,7 @@ const Register = () => {
     const res= await register(userData);
       if (res.status === 201 || res.status === 200) {
         toast.success("Registration successful!");
+
         setFormData({
           name: "",
           email: "",
@@ -106,6 +109,7 @@ const Register = () => {
           upazila: "",
           avatar: null,
         });
+        navigate("/login")
       }
     } catch (err) {
       toast.error("Registration failed");
@@ -230,7 +234,14 @@ const Register = () => {
           <button type="submit" className="btn btn-primary w-full gradient-red">
             Register
           </button>
+            <p className="text-center mt-4">
+          Already have an account?{" "}
+          <Link className="text-[#D7263D]  font-bold" to="/login">
+            Login
+          </Link>
+        </p>
         </form>
+       
       </div>
     </div>
   );
