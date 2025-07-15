@@ -9,6 +9,7 @@ import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 import DashboardProfile from "../Pages/Dashboard/DashboardProfile/DashboardProfile";
 import CreateDonationRequest from "../Pages/Dashboard/createDonationRequest/createDonationRequest";
 import EditDonationRequest from "../Pages/Dashboard/EditDonationRequestPage/EditDonationRequestPage";
+import DonationRequestDetails from "../Pages/Dashboard/DonationRequestDetails/DonationRequestDetails";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +45,9 @@ export const router = createBrowserRouter([
       },{
         path:"/dashboard/edit-donation-request/:id",
         element: <EditDonationRequest/>
+      },{
+        path:"/dashboard/donation-request/:id",
+        element:<DonationRequestDetails/>
       }
     ]
   }
