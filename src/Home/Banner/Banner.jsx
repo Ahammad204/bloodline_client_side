@@ -7,7 +7,7 @@ const Banner = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-[90vh] grid md:grid-cols-2 items-center gap-10 px-4 md:px-20 bg-white">
+    <div className="min-h-[90vh] grid md:grid-cols-2 items-center gap-10 px-4 md:px-20 ">
       {/* Left: Lottie animation */}
       <div>
         <Lottie animationData={bloodDonateAnimation} loop={true} />
