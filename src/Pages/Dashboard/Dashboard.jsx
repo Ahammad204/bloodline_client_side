@@ -36,13 +36,19 @@ const Dashboard = () => {
               <li>
                 <NavLink to="/dashboard/all-blood-donation-request">
                   <FaHandHoldingDollar></FaHandHoldingDollar>
-                  All Blood Donation Request Page
+                  All Blood Donation Request
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/allDonation">
+                <NavLink to="/dashboard/content-management">
                   <FaHandHoldingDollar></FaHandHoldingDollar>
-                  All Donation
+                  Content Management
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/content-management/add-blog">
+                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  Add Blog
                 </NavLink>
               </li>
               <div className="divider"></div>
