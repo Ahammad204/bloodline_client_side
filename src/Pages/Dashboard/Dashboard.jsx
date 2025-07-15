@@ -1,6 +1,8 @@
 import { FaHome, FaUsers } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
+import { FaHandHoldingDollar, FaPaw } from "react-icons/fa6";
 import useAuth from "../../Hooks/UseAuth";
+import { CgProfile } from "react-icons/cg";
 
 
 const Dashboard = () => {
@@ -52,6 +54,42 @@ const Dashboard = () => {
             </NavLink>
           </li>
 
+          <li>
+            <NavLink to="/dashboard/profile">
+              <CgProfile />
+              Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/addedPet">
+              <FaPaw></FaPaw>
+              My Added Pets{" "}
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/adoptionRequest">
+              <FaHandHoldingDollar></FaHandHoldingDollar>
+              Adoption Request
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/createDonationCampaign">
+              <FaHandHoldingDollar></FaHandHoldingDollar>
+              Create Donation Campaign
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/addedDonation">
+              <FaHandHoldingDollar></FaHandHoldingDollar>
+              My Donation Campaign
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/myDonation">
+              <FaHandHoldingDollar></FaHandHoldingDollar>
+              My Donation{" "}
+            </NavLink>
+          </li>
         </ul>
       </div>
       {/* dashboard content */}
