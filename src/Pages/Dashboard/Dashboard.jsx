@@ -67,9 +67,9 @@ const Dashboard = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard/adoptionRequest">
-              <FaHandHoldingDollar></FaHandHoldingDollar>
-              Adoption Request
+            <NavLink to="/dashboard/my-donation-requests">
+              <FaHandHoldingMedical />
+              My Donation Request
             </NavLink>
           </li>
           <li>
@@ -94,7 +94,7 @@ const Dashboard = () => {
       </div>
       {/* dashboard content */}
       <div className="flex-1 p-8">
-        <p className="text-4xl uppercase border-y-4 py-4 text-center">
+        <p className="text-4xl uppercase border-y-4 py-4 text-center gradient-red">
           {" "}
           Welcome {user?.name}
         </p>
