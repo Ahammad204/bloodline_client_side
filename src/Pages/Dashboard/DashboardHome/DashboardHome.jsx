@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../../Hooks/UseAuth";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -40,19 +41,31 @@ const DashboardHome = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this request?"
-    );
-    if (!confirm) return;
-    try {
-      await axiosSecure.delete(`/donation-requests/${id}`);
-      toast.success("Request deleted");
-      setRequests((prev) => prev.filter((req) => req._id !== id));
-    } catch {
-      toast.error("Failed to delete request");
+const handleDelete = async (id) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#D7263D",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!"
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await axiosSecure.delete(`/donation-requests/${id}`);
+        toast.success("Request deleted successfully");
+        setRequests((prev) => prev.filter((req) => req._id !== id));
+        Swal.fire("Deleted!", "Your request has been deleted.", "success");
+      } catch (error) {
+        toast.error("Failed to delete request");
+        Swal.fire("Error!", "Something went wrong!", "error");
+        console.log(error)
+      }
     }
-  };
+  });
+};
+
 
   return (
     <div className="p-6">

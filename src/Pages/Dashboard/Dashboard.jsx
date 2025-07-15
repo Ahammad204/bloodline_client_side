@@ -1,4 +1,4 @@
-import { FaHome, FaUsers } from "react-icons/fa";
+import { FaHandHoldingMedical, FaHome, FaUsers } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
 import { FaHandHoldingDollar, FaPaw } from "react-icons/fa6";
 import useAuth from "../../Hooks/UseAuth";
@@ -62,7 +62,7 @@ const Dashboard = () => {
           </li>
           <li>
             <NavLink to="/dashboard/create-donation-request">
-              <FaPaw></FaPaw>
+              <FaHandHoldingMedical />
               Create donation request
             </NavLink>
           </li>
