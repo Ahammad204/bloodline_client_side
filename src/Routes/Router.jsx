@@ -16,6 +16,7 @@ import AllUsers from "../Pages/Dashboard/AllUsers/AllUsers";
 import AllBloodDonationRequestPage from "../Pages/Dashboard/AllBloodDonationRequestPage/AllBloodDonationRequestPage";
 import ContentManagementPage from "../Pages/Dashboard/ContentManagementPage/ContentManagementPage";
 import AddBlogPage from "../Pages/Dashboard/AddBlogPage/AddBlogPage";
+import EditContent from "../Pages/Dashboard/EditContent/EditContent";
 
 export const router = createBrowserRouter([
   {
@@ -72,6 +73,9 @@ export const router = createBrowserRouter([
       },{
         path:"/dashboard/content-management/add-blog",
         element:<AddBlogPage/>
+      },{
+        path:"/dashboard/content-management/edit-blog/:id",
+        element: <EditContent/>
       }
     ]
   }
