@@ -2,7 +2,6 @@ import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/navlogo.png";
 import useAuth from "../../Hooks/UseAuth";
 
-
 const Navbar = () => {
   const { user, logout } = useAuth();
   console.log("from navbar", user);
@@ -27,29 +26,38 @@ const Navbar = () => {
   // };
 
   const getNavLinkClass = ({ isActive }) =>
-  isActive
-    ? "gradient-red text-white px-3 py-2 rounded"
-    : "hover:bg-gray-200 px-3 py-2 rounded";
-
+    isActive
+      ? "gradient-red text-white px-3 py-2 rounded"
+      : "hover:bg-gray-200 px-3 py-2 rounded";
 
   const navLink = (
     <>
       <li>
-        <NavLink to="/" className={getNavLinkClass}>Home</NavLink>
+        <NavLink to="/" className={getNavLinkClass}>
+          Home
+        </NavLink>
       </li>
       {user && (
         <>
           <li>
-            <NavLink to="/donation-request" className={getNavLinkClass}>Donation Request</NavLink>
+            <NavLink to="/donation-request" className={getNavLinkClass}>
+              Donation Request
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/blog" className={getNavLinkClass}>Blog</NavLink>
+            <NavLink to="/blog" className={getNavLinkClass}>
+              Blog
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/Search" className={getNavLinkClass}>Find Donor</NavLink>
+            <NavLink to="/Search" className={getNavLinkClass}>
+              Find Donor
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/Search" className={getNavLinkClass}>Find Donor</NavLink>
+            <NavLink to="/Search" className={getNavLinkClass}>
+              Find Donor
+            </NavLink>
           </li>
 
           {/* {user.role === "admin" && (
@@ -99,7 +107,7 @@ const Navbar = () => {
             </ul>
           </div>
           <a className="  normal-case text-xl">
-            <img src={logo} alt="" className="h-16 w-auto"/>
+            <img src={logo} alt="" className="h-16 w-auto" />
           </a>
         </div>
         <div className="navbar-center hidden lg:flex">
@@ -140,10 +148,20 @@ const Navbar = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52"
               >
                 <li>
-                  <button className="btn btn-sm btn-ghost">{user.name}</button>
+                  {/* <button className="btn btn-sm btn-ghost">{user.name}</button> */}
+                  <NavLink
+                    to="/dashboard"
+                    className={({ isActive }) =>
+                      `${getNavLinkClass({
+                        isActive,
+                      })} flex justify-center text-center w-full`
+                    }
+                  >
+                    Dashboard
+                  </NavLink>
                 </li>
 
                 <li>
