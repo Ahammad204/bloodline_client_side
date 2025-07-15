@@ -52,6 +52,11 @@ const Navbar = () => {
           Blog
         </NavLink>
       </li>
+      <li>
+        <NavLink to="/funding" className={getNavLinkClass}>
+          Fund
+        </NavLink>
+      </li>
     </>
   );
 

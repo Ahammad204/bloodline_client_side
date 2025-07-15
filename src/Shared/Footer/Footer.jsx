@@ -5,7 +5,7 @@ import logo from "../../assets/footerlogo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-white text-gray-800 py-10 px-4 md:px-10 shadow-inner">
+    <footer className="bg-[#f5c0c06c] text-gray-800 py-10 px-4 md:px-10 shadow-inner">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo & Tagline */}
         <div>

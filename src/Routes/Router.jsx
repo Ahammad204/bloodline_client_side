@@ -21,6 +21,7 @@ import Search from "../Pages/SearchPage/Search";
 import DonationRequest from "../Pages/DonationRequest/DonationRequest";
 import Blogs from "../Pages/Blogs/Blogs";
 import BlogsDetails from "../Pages/BlogsDetails/BlogsDetails";
+import Fund from "../Pages/Funding/Fund";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,9 @@ export const router = createBrowserRouter([
       },{
         path:"/blogs/:id",
         element:<BlogsDetails/>
+      },{
+        path:"/funding",
+        element:<Fund/>
       }
     ]
   },{
