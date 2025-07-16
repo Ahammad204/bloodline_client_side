@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-import axiosPublic from "../../utils/axiosPublic";
 import Lottie from "lottie-react";
+import { Link, useNavigate } from "react-router-dom";
 import registerAnimation from "../../assets/register.json";
 import useAuth from "../../Hooks/UseAuth";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axiosPublic from "../../utils/axiosPublic";
 
 const Register = () => {
-  const [districts, setDistricts] = useState([]);
-  const [upazilas, setUpazilas] = useState([]);
-  const [selectedDistrictId, setSelectedDistrictId] = useState("");
-  const {register} = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
+  const [selectedDistrictId, setSelectedDistrictId] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,20 +25,25 @@ const Register = () => {
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-  useEffect(() => {
-    axiosPublic.get("/geocode/districts").then((res) => setDistricts(res.data));
-  }, []);
+  // Fetch districts
+  const { data: districts = [] } = useQuery({
+    queryKey: ["districts"],
+    queryFn: async () => {
+      const res = await axiosPublic.get("/geocode/districts");
+      return res.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-  useEffect(() => {
-    if (selectedDistrictId) {
-      axiosPublic.get("/geocode/upazilas").then((res) => {
-        const filtered = res.data.filter(
-          (item) => item.district_id === selectedDistrictId
-        );
-        setUpazilas(filtered);
-      });
-    }
-  }, [selectedDistrictId]);
+  // Fetch upazilas
+  const { data: upazilas = [] } = useQuery({
+    queryKey: ["upazilas", selectedDistrictId],
+    queryFn: async () => {
+      const res = await axiosPublic.get("/geocode/upazilas");
+      return res.data.filter((u) => u.district_id === selectedDistrictId);
+    },
+    enabled: !!selectedDistrictId,
+  });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -70,18 +74,15 @@ const Register = () => {
     }
 
     try {
-      // 1. Upload avatar to imgbb
+      // Upload avatar
       const imageData = new FormData();
       imageData.append("image", avatar);
-
       const imgbbRes = await axios.post(
         `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY}`,
         imageData
       );
-
       const avatarUrl = imgbbRes.data.data.url;
 
-      // 2. Send user data to backend
       const userData = {
         name,
         email,
@@ -94,11 +95,10 @@ const Register = () => {
         status: "active",
       };
 
-    //   const res = await axiosPublic.post("/api/register", userData);
-    const res= await register(userData);
-      if (res.status === 201 || res.status === 200) {
-        toast.success("Registration successful!");
+      const res = await register(userData);
 
+      if (res?.status === 200 || res?.status === 201) {
+        toast.success("Registration successful!");
         setFormData({
           name: "",
           email: "",
@@ -109,7 +109,7 @@ const Register = () => {
           upazila: "",
           avatar: null,
         });
-        navigate("/login")
+        navigate("/login");
       }
     } catch (err) {
       toast.error("Registration failed");
@@ -119,13 +119,14 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 md:px-0">
-      <div className="max-w-6xl w-full grid md:grid-cols-2 gap-8 items-center  rounded-2xl p-6 md:p-12 ">
+      <div className="max-w-6xl w-full grid md:grid-cols-2 gap-8 items-center rounded-2xl p-6 md:p-12">
         <div>
-          <Lottie animationData={registerAnimation} loop={true} />
+          <Lottie animationData={registerAnimation} loop />
         </div>
+
         <form
           onSubmit={handleSubmit}
-          className="max-w-xl mx-auto p-6  shadow rounded-lg space-y-4"
+          className="max-w-xl mx-auto p-6 shadow rounded-lg space-y-4"
         >
           <h2 className="text-2xl font-bold text-center text-[#D7263D]">
             Register To Bloodline
@@ -179,10 +180,8 @@ const Register = () => {
             name="district"
             onChange={(e) => {
               handleChange(e);
-              const selected = districts.find(
-                (dist) => dist.name === e.target.value
-              );
-              setSelectedDistrictId(selected?.id);
+              const selected = districts.find((d) => d.name === e.target.value);
+              setSelectedDistrictId(selected?.id || "");
             }}
             value={formData.district}
             required
@@ -234,14 +233,14 @@ const Register = () => {
           <button type="submit" className="btn btn-primary w-full gradient-red">
             Register
           </button>
-            <p className="text-center mt-4">
-          Already have an account?{" "}
-          <Link className="text-[#D7263D]  font-bold" to="/login">
-            Login
-          </Link>
-        </p>
+
+          <p className="text-center mt-4">
+            Already have an account?{" "}
+            <Link className="text-[#D7263D] font-bold" to="/login">
+              Login
+            </Link>
+          </p>
         </form>
-       
       </div>
     </div>
   );

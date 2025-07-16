@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
@@ -6,69 +6,63 @@ import Swal from "sweetalert2";
 import useAdmin from "../../../Hooks/useAdmin";
 import useVolunteer from "../../../Hooks/useVolunteer";
 import Loading from "../../../Shared/Loading/Loading";
+import { useQuery } from "@tanstack/react-query";
 
 const AllBloodDonationRequestPage = () => {
   const axiosSecure = useAxiosSecure();
   const [isAdmin, isAdminLoading] = useAdmin();
   const [isVolunteer, isVolunteerLoading] = useVolunteer();
   const navigate = useNavigate();
-  const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const requestsPerPage = 5;
 
-  useEffect(() => {
-    const fetchRequests = async () => {
+const {
+  data: requests = [],
+  isLoading: requestsLoading,
+  refetch,
+} = useQuery({
+  queryKey: ["donation-requests"],
+  queryFn: async () => {
+    const { data } = await axiosSecure.get("/donation-requests");
+    return data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  },
+});
+const handleStatusUpdate = async (id, status) => {
+  try {
+    await axiosSecure.patch(`/donation-requests/${id}`, { status });
+    toast.success(`Marked as ${status}`);
+    refetch(); 
+  } catch {
+    toast.error("Failed to update status");
+  }
+};
+
+const handleDelete = async (id) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#D7263D",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
       try {
-        const { data } = await axiosSecure.get("/donation-requests");
-        const sorted = data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setRequests(sorted);
+        await axiosSecure.delete(`/donation-requests/${id}`);
+        toast.success("Request deleted");
+        refetch(); //  Refresh data
+        Swal.fire("Deleted!", "The request has been deleted.", "success");
       } catch (err) {
-        toast.error("Failed to fetch all requests");
-        console.error(err);
+        toast.error("Failed to delete request");
+        Swal.fire("Error!", "Something went wrong!", "error");
+        console.log(err);
       }
-    };
-    fetchRequests();
-  }, [axiosSecure]);
-
-  const handleStatusUpdate = async (id, status) => {
-    try {
-      await axiosSecure.patch(`/donation-requests/${id}`, { status });
-      toast.success(`Marked as ${status}`);
-      setRequests((prev) =>
-        prev.map((req) => (req._id === id ? { ...req, status } : req))
-      );
-    } catch {
-      toast.error("Failed to update status");
     }
-  };
+  });
+};
 
-  const handleDelete = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#D7263D",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await axiosSecure.delete(`/donation-requests/${id}`);
-          toast.success("Request deleted");
-          setRequests((prev) => prev.filter((req) => req._id !== id));
-          Swal.fire("Deleted!", "The request has been deleted.", "success");
-        } catch (err) {
-          toast.error("Failed to delete request");
-          Swal.fire("Error!", "Something went wrong!", "error");
-          console.log(err);
-        }
-      }
-    });
-  };
 
   const filteredRequests =
     filter === "all"
@@ -80,9 +74,10 @@ const AllBloodDonationRequestPage = () => {
   const currentRequests = filteredRequests.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
 
-  if (isAdminLoading || isVolunteerLoading) {
-    return <Loading></Loading>;
-  }
+if (isAdminLoading || isVolunteerLoading || requestsLoading) {
+  return <Loading />;
+}
+
 
   return (
     <div className="p-6">

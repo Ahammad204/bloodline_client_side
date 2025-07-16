@@ -4,6 +4,8 @@ import useAuth from "../../../Hooks/UseAuth";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "../../../Shared/Loading/Loading";
 
 const MyDonationRequest = () => {
   const { user } = useAuth();
@@ -14,22 +16,37 @@ const MyDonationRequest = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const requestsPerPage = 5;
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const { data } = await axiosSecure.get("/donation-requests");
-        const userRequests = data
-          .filter((req) => req.requesterEmail === user.email)
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setRequests(userRequests);
-      } catch (err) {
-        toast.error("Failed to fetch your requests");
-        console.error(err);
-      }
-    };
-    if (user) fetchRequests();
-  }, [axiosSecure, user]);
+  // useEffect(() => {
+  //   const fetchRequests = async () => {
+  //     try {
+  //       const { data } = await axiosSecure.get("/donation-requests");
+  //       const userRequests = data
+  //         .filter((req) => req.requesterEmail === user.email)
+  //         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  //       setRequests(userRequests);
+  //     } catch (err) {
+  //       toast.error("Failed to fetch your requests");
+  //       console.error(err);
+  //     }
+  //   };
+  //   if (user) fetchRequests();
+  // }, [axiosSecure, user]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["donationRequest",user.email],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/donation-requests`);
+      return res.data;
+    },
+  });
 
+  useEffect(() => {
+    if (data) {
+      const userRequests = data
+        .filter((req) => req.requesterEmail === user.email)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setRequests(userRequests);
+    }
+  }, [data, user.email]);
   const handleStatusUpdate = async (id, status) => {
     try {
       await axiosSecure.patch(`/donation-requests/${id}`, { status });
@@ -61,7 +78,7 @@ const MyDonationRequest = () => {
         } catch (err) {
           toast.error("Failed to delete request");
           Swal.fire("Error!", "Something went wrong!", "error");
-          console.log(err)
+          console.log(err);
         }
       }
     });
@@ -76,6 +93,10 @@ const MyDonationRequest = () => {
   const indexOfFirst = indexOfLast - requestsPerPage;
   const currentRequests = filteredRequests.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
+
+  if(isLoading){
+    return <Loading/>
+  }
 
   return (
     <div className="p-6">
@@ -130,9 +151,7 @@ const MyDonationRequest = () => {
                   {req.status === "inprogress" && req.donor ? (
                     <>
                       <p>{req.donor.name}</p>
-                      <p className="text-sm text-gray-500">
-                        {req.donor.email}
-                      </p>
+                      <p className="text-sm text-gray-500">{req.donor.email}</p>
                     </>
                   ) : (
                     "-"
@@ -148,9 +167,7 @@ const MyDonationRequest = () => {
                         Done
                       </button>
                       <button
-                        onClick={() =>
-                          handleStatusUpdate(req._id, "canceled")
-                        }
+                        onClick={() => handleStatusUpdate(req._id, "canceled")}
                         className="btn btn-xs btn-error gradient-red"
                       >
                         Cancel

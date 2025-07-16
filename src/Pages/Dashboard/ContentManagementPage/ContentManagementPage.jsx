@@ -8,67 +8,65 @@ import Swal from "sweetalert2";
 import useAdmin from "../../../Hooks/useAdmin";
 import useVolunteer from "../../../Hooks/useVolunteer";
 import Loading from "../../../Shared/Loading/Loading";
+import { useQuery } from "@tanstack/react-query";
 
 const ContentManagementPage = () => {
   const axiosSecure = useAxiosSecure();
-  const [blogs, setBlogs] = useState([]);
   const [filter, setFilter] = useState("all");
   const [isAdmin, isAdminLoading] = useAdmin();
   const [isVolunteer, isVolunteerLoading] = useVolunteer();
   const [page, setPage] = useState(1);
   const blogsPerPage = 5;
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const res = await axiosSecure.get("/blogs");
-        setBlogs(res.data);
-      } catch (err) {
-        toast.error("Failed to fetch blogs");
-        console.log(err);
-      }
-    };
-    fetchBlogs();
-  }, [axiosSecure]);
+  const {
+  data: blogs = [],
+  isLoading,
+  refetch,
+} = useQuery({
+  queryKey: ["blogs"],
+  queryFn: async () => {
+    const res = await axiosSecure.get("/blogs");
+    return res.data;
+  },
+});
 
   const handleStatusChange = async (id, status) => {
-    try {
-      await axiosSecure.patch(`/blogs/${id}`, { status });
-      toast.success(
-        `Blog ${status === "published" ? "published" : "unpublished"}`
-      );
-      setBlogs((prev) =>
-        prev.map((b) => (b._id === id ? { ...b, status } : b))
-      );
-    } catch {
-      toast.error("Failed to update status");
-    }
-  };
+  try {
+    await axiosSecure.patch(`/blogs/${id}`, { status });
+    toast.success(
+      `Blog ${status === "published" ? "published" : "unpublished"}`
+    );
+    refetch(); //  Refresh blogs
+  } catch {
+    toast.error("Failed to update status");
+  }
+};
 
-  const handleDelete = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#D7263D",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await axiosSecure.delete(`/blogs/${id}`);
-          toast.success("Blog deleted");
-          setBlogs((prev) => prev.filter((b) => b._id !== id));
-          Swal.fire("Deleted!", "Your request has been deleted.", "success");
-        } catch (err) {
-          toast.error("Failed to delete blog");
-          Swal.fire("Error!", "Something went wrong!", "error");
-          console.log(err);
-        }
+const handleDelete = async (id) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#D7263D",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await axiosSecure.delete(`/blogs/${id}`);
+        toast.success("Blog deleted");
+        refetch(); //  Refresh blogs
+        Swal.fire("Deleted!", "Your request has been deleted.", "success");
+      } catch (err) {
+        toast.error("Failed to delete blog");
+        Swal.fire("Error!", "Something went wrong!", "error");
+        console.log(err);
       }
-    });
-  };
+    }
+  });
+};
+
   const filteredBlogs =
     filter === "all" ? blogs : blogs.filter((b) => b.status === filter);
 
@@ -78,9 +76,10 @@ const ContentManagementPage = () => {
     page * blogsPerPage
   );
 
-  if (isAdminLoading || isVolunteerLoading) {
-    return <Loading></Loading>;
-  }
+if (isAdminLoading || isVolunteerLoading || isLoading) {
+  return <Loading />;
+}
+
 
   return (
     <div className="p-6">

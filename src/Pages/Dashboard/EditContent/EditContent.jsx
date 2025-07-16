@@ -3,35 +3,52 @@ import { useParams, useNavigate } from "react-router-dom";
 import JoditEditor from "jodit-react";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "../../../Shared/Loading/Loading";
 
 const EditContent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const editor = useRef(null);
-
-  const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [thumbnail, setThumbnail] = useState("");
   const [content, setContent] = useState("");
   const [newThumbnailFile, setNewThumbnailFile] = useState(null);
 
   // Fetch blog data
-  useEffect(() => {
-    const fetchBlog = async () => {
-      try {
-        const { data } = await axiosSecure.get(`/blogs/${id}`);
-        setTitle(data.title);
+  // useEffect(() => {
+  //   const fetchBlog = async () => {
+  //     try {
+  //       const { data } = await axiosSecure.get(`/blogs/${id}`);
+  //       setTitle(data.title);
+  //       setThumbnail(data.thumbnail);
+  //       setContent(data.content);
+  //       setLoading(false);
+  //     } catch (err) {
+  //       toast.error("Failed to load blog");
+  //       console.error(err);
+  //     }
+  //   };
+  //   fetchBlog();
+  // }, [axiosSecure, id]);
+
+  const { data, isLoading } = useQuery({
+  queryKey: ["blogs", id],
+  queryFn: async () => {
+    const res = await axiosSecure.get(`/blogs/${id}`);
+    return res.data; 
+  },
+  enabled: !!id, 
+});
+
+useEffect(() => {
+  if (data) {
+    setTitle(data.title);
         setThumbnail(data.thumbnail);
         setContent(data.content);
-        setLoading(false);
-      } catch (err) {
-        toast.error("Failed to load blog");
-        console.error(err);
-      }
-    };
-    fetchBlog();
-  }, [axiosSecure, id]);
+  }
+}, [data]);
 
   // Handle image upload if changed
   const handleImageUpload = async (imageFile) => {
@@ -81,7 +98,7 @@ const EditContent = () => {
     }
   };
 
-  if (loading) return <div className="p-6">Loading blog...</div>;
+  if (isLoading) return <Loading/>;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">

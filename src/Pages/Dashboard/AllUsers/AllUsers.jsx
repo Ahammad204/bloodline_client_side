@@ -18,26 +18,27 @@ import {
 } from "@material-tailwind/react";
 import useAuth from "../../../Hooks/UseAuth";
 import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "../../../Shared/Loading/Loading";
 
 const AllUsers = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const [users, setUsers] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const { data } = await axiosSecure.get("/users");
-        setUsers(data);
-      } catch (error) {
-        toast.error("Failed to load users");
-      }
-    };
-    fetchUsers();
-  }, [axiosSecure]);
+const {
+  data: users = [],
+  isLoading,
+  refetch,
+} = useQuery({
+  queryKey: ["all-users"],
+  queryFn: async () => {
+    const res = await axiosSecure.get("/users");
+    return res.data;
+  },
+});
 
   const filteredUsers = users.filter((u) =>
     statusFilter === "all" ? true : u.status === statusFilter
@@ -46,17 +47,19 @@ const AllUsers = () => {
   const paginatedUsers = filteredUsers.slice((page - 1) * limit, page * limit);
   const totalPages = Math.ceil(filteredUsers.length / limit);
 
-  const updateUser = async (id, data) => {
-    try {
-      await axiosSecure.patch(`/users/${id}`, data);
-      toast.success("User updated");
-      setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, ...data } : u))
-      );
-    } catch {
-      toast.error("Update failed");
-    }
-  };
+ const updateUser = async (id, data) => {
+  try {
+    await axiosSecure.patch(`/users/${id}`, data);
+    toast.success("User updated");
+    refetch();
+  } catch {
+    toast.error("Update failed");
+  }
+};
+if (isLoading) {
+  return <Loading/>;
+}
+
 
   return (
     <div className="p-6">

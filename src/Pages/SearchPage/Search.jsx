@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import Loading from "../../Shared/Loading/Loading";
@@ -10,24 +12,50 @@ const Search = () => {
 
   const [bloodGroup, setBloodGroup] = useState("");
   const [districtId, setDistrictId] = useState("");
-  const [districts, setDistricts] = useState([]);
-  const [upazilas, setUpazilas] = useState([]);
-  const [filteredUpazilas, setFilteredUpazilas] = useState([]);
   const [upazilaName, setUpazilaName] = useState("");
-  const [donors, setDonors] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [filteredUpazilas, setFilteredUpazilas] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [filteredDonors, setFilteredDonors] = useState([]);
 
-  useEffect(() => {
-    axiosSecure.get("/geocode/districts").then((res) => setDistricts(res.data));
-    axiosSecure.get("/geocode/upazilas").then((res) => setUpazilas(res.data));
-  }, [axiosSecure]);
+  //  Fetch Districts
+  const { data: districts = [], isLoading: loadingDistricts } = useQuery({
+    queryKey: ["districts"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/geocode/districts");
+      return res.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  //  Fetch Upazilas
+  const { data: upazilas = [], isLoading: loadingUpazilas } = useQuery({
+    queryKey: ["upazilas"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/geocode/upazilas");
+      return res.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  //  Fetch all users (donors)
+  const {
+    data: donors = [],
+    isFetching,
+    refetch: refetchDonors,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/users");
+      return res.data;
+    },
+    enabled: false, // only run when user clicks search
+  });
 
   useEffect(() => {
     if (districtId) {
       const filtered = upazilas.filter((u) => u.district_id === districtId);
       setFilteredUpazilas(filtered);
-      setUpazilaName(""); // reset upazila on district change
+      setUpazilaName("");
     }
   }, [districtId, upazilas]);
 
@@ -36,76 +64,52 @@ const Search = () => {
       return toast.error("Please select all fields");
     }
 
-    try {
-      setLoading(true);
-      setHasSearched(true);
-      setDonors([]);
+    setHasSearched(true);
+    const { data } = await refetchDonors();
 
-      const { data } = await axiosSecure.get("/users");
-      const selectedDistrict = districts.find((d) => d.id === districtId);
-      const filtered = data.filter(
-        (user) =>
-          user.role === "donor" &&
-          user.status === "active" &&
-          user.bloodGroup === bloodGroup &&
-          user.district === selectedDistrict.name &&
-          user.upazila === upazilaName
-      );
-      setDonors(filtered);
-    } catch (err) {
-      toast.error("Search failed");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    const selectedDistrict = districts.find((d) => d.id === districtId);
+
+    const matched = data.filter(
+      (user) =>
+        user.role === "donor" &&
+        user.status === "active" &&
+        user.bloodGroup === bloodGroup &&
+        user.district === selectedDistrict.name &&
+        user.upazila === upazilaName
+    );
+
+    setFilteredDonors(matched);
   };
 
-  const pdfRef = useRef();
+  const downloadPDF = () => {
+    if (filteredDonors.length === 0) {
+      toast.error("No donors to download");
+      return;
+    }
 
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Blood Donor Search Results", 14, 20);
 
+    const head = [["Name", "Email", "Blood Group", "District", "Upazila"]];
+    const rows = filteredDonors.map((donor) => [
+      donor.name,
+      donor.email,
+      donor.bloodGroup,
+      donor.district,
+      donor.upazila,
+    ]);
 
-const downloadPDF = () => {
-  if (donors.length === 0) {
-    toast.error("No donors to download");
-    return;
-  }
+    autoTable(doc, {
+      startY: 30,
+      head,
+      body: rows,
+      styles: { halign: "left", cellPadding: 3 },
+      headStyles: { fillColor: [215, 38, 61], textColor: [255, 255, 255] },
+    });
 
-  const doc = new jsPDF();
-
-  doc.setFontSize(16);
-  doc.text("Blood Donor Search Results", 14, 20);
-
-  // Table Headers
-  const head = [["Name", "Email", "Blood Group", "District", "Upazila"]];
-
-  // Table Rows
-  const rows = donors.map((donor) => [
-    donor.name,
-    donor.email,
-    donor.bloodGroup,
-    donor.district,
-    donor.upazila,
-  ]);
-
-  autoTable(doc, {
-    startY: 30,
-    head,
-    body: rows,
-    styles: {
-      halign: "left",
-      cellPadding: 3,
-    },
-    headStyles: {
-      fillColor: [215, 38, 61], // Bloodline Red
-      textColor: [255, 255, 255],
-      fontStyle: "bold",
-    },
-  });
-
-  doc.save("donor-search-results.pdf");
-};
-
-
+    doc.save("donor-search-results.pdf");
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -113,7 +117,6 @@ const downloadPDF = () => {
         Search for Blood Donors 🩸
       </h2>
 
-      {/* Search Form */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <select
           className="select select-bordered"
@@ -158,28 +161,30 @@ const downloadPDF = () => {
           onClick={handleSearch}
           className="btn btn-primary gradient-red w-full"
         >
-          {loading ? (
-            <span className="loading loading-spinner loading-sm"></span>
+          {isFetching ? (
+            <span className="loading loading-spinner loading-sm" />
           ) : (
             "Search"
           )}
         </button>
       </div>
 
-      {/* Donor Results */}
+      {/* Results */}
       <div className="mt-6">
-        {loading && <Loading />}
+        {(loadingDistricts || loadingUpazilas || isFetching) && <Loading />}
 
-        {!loading && hasSearched && donors.length === 0 && (
-          <div className="text-center text-red-500 font-semibold">
+        {!isFetching && hasSearched && filteredDonors.length === 0 && (
+          <p className="text-center text-red-500 font-semibold">
             No donor found for your selected area and blood group.
-          </div>
+          </p>
         )}
-        {donors.length > 0 && (
+
+        {filteredDonors.length > 0 && (
           <>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-gray-800">
-                Found {donors.length} donor{donors.length > 1 ? "s" : ""}
+                Found {filteredDonors.length} donor
+                {filteredDonors.length > 1 ? "s" : ""}
               </h3>
               <button
                 className="btn btn-outline btn-sm text-red-600 border-red-400"
@@ -189,18 +194,16 @@ const downloadPDF = () => {
               </button>
             </div>
 
-            <div ref={pdfRef} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {donors.map((donor) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredDonors.map((donor) => (
                 <div
                   key={donor._id}
                   className="p-5 bg-white rounded-lg shadow border border-gray-100 flex gap-4 items-center"
                 >
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-[#D7263D] text-white flex items-center justify-center font-bold text-lg">
-                      {donor.bloodGroup}
-                    </div>
+                  <div className="w-12 h-12 rounded-full bg-[#D7263D] text-white flex items-center justify-center font-bold text-lg">
+                    {donor.bloodGroup}
                   </div>
-                  <div className="flex-grow">
+                  <div>
                     <h4 className="text-lg font-semibold text-gray-800">
                       {donor.name}
                     </h4>

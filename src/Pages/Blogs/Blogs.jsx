@@ -10,30 +10,30 @@ import {
   FaTwitterSquare,
   FaWhatsappSquare,
 } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
 
 const Blogs = () => {
   const axiosSecure = useAxiosSecure();
   const [blogs, setBlogs] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // Fetch all published blogs
-  useEffect(() => {
-    axiosSecure
-      .get("/blogs")
-      .then((res) => {
-        const published = res.data.filter((b) => b.status === "published");
+
+  const { data, isLoading } = useQuery({
+  queryKey: ["blogs"],
+  queryFn: async () => {
+    const res = await axiosSecure.get(`/blogs`);
+    return res.data; 
+  }
+});
+
+useEffect(() => {
+  if (data) {
+     const published = data.filter((b) => b.status === "published");
         setBlogs(published);
         setFilteredBlogs(published);
-      })
-      .catch((err) => {
-        toast.error("Failed to load blogs");
-        console.error(err);
-      })
-      .finally(() => setLoading(false));
-  }, [axiosSecure]);
-
+  }
+}, [data]);
   // Search filter
   useEffect(() => {
     const keyword = search.toLowerCase();
@@ -43,7 +43,7 @@ const Blogs = () => {
     setFilteredBlogs(filtered);
   }, [search, blogs]);
 
-  if (loading) return <Loading />;
+  if (isLoading) return <Loading />;
   // Function to copy URL to clipboard
   const copyToClipboard = (url) => {
     navigator.clipboard
@@ -61,6 +61,7 @@ const Blogs = () => {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || "";
   }
+
 
   return (
     <div className="p-6 max-w-6xl mx-auto">

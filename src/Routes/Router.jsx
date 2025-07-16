@@ -22,6 +22,7 @@ import DonationRequest from "../Pages/DonationRequest/DonationRequest";
 import Blogs from "../Pages/Blogs/Blogs";
 import BlogsDetails from "../Pages/BlogsDetails/BlogsDetails";
 import Fund from "../Pages/Funding/Fund";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -46,7 +47,7 @@ export const router = createBrowserRouter([
         element:<DonationRequest/>
       },{
         path:"/donation-request/:id",
-        element:<DonationRequestDetails/>
+        element: <PrivateRoute><DonationRequestDetails/></PrivateRoute>
       },{
         path:"/blog",
         element:<Blogs/>
@@ -55,53 +56,53 @@ export const router = createBrowserRouter([
         element:<BlogsDetails/>
       },{
         path:"/funding",
-        element:<Fund/>
+        element:<PrivateRoute><Fund/></PrivateRoute>
       }
     ]
   },{
     path:"/dashboard",
-    element: <Dashboard></Dashboard>,
+    element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
     errorElement: <Error></Error>,
     children:[
       {
         path:"/dashboard",
-        element: <DashboardHome/>
+        element: <PrivateRoute><DashboardHome></DashboardHome></PrivateRoute>
       },{
         path:"/dashboard/profile",
-        element:<DashboardProfile/>
+        element: <PrivateRoute><DashboardProfile/></PrivateRoute>
       },{
         path:"/dashboard/create-donation-request",
-        element:<CreateDonationRequest/>
+        element:<PrivateRoute><CreateDonationRequest/></PrivateRoute>
       },{
         path:"/dashboard/edit-donation-request/:id",
-        element: <EditDonationRequest/>
+        element: <PrivateRoute><EditDonationRequest/></PrivateRoute>
       },{
         path:"/dashboard/donation-request/:id",
-        element:<DonationRequestDetails/>
+        element: <PrivateRoute><DonationRequestDetails/></PrivateRoute>
       },{
         path:"/dashboard/my-donation-requests",
-        element:<MyDonationRequest/>
+        element:<PrivateRoute><MyDonationRequest/></PrivateRoute>
       },{
         path:"/dashboard/admin",
-        element:<AdminDashboard/>
+        element:<PrivateRoute><AdminDashboard/></PrivateRoute>
       },{
         path:"/dashboard/volunteer",
-        element:<AdminDashboard/>
+        element: <PrivateRoute><AdminDashboard/></PrivateRoute>
       },{
         path:"/dashboard/users",
-        element:<AllUsers/>
+        element: <PrivateRoute><AllUsers/></PrivateRoute>
       },{
         path:"/dashboard/all-blood-donation-request",
-        element: <AllBloodDonationRequestPage/>
+        element: <PrivateRoute><AllBloodDonationRequestPage/></PrivateRoute>
       },{
         path:"/dashboard/content-management",
-        element:<ContentManagementPage/>
+        element: <PrivateRoute><ContentManagementPage/></PrivateRoute>
       },{
         path:"/dashboard/content-management/add-blog",
-        element:<AddBlogPage/>
+        element: <PrivateRoute><AddBlogPage/></PrivateRoute>
       },{
         path:"/dashboard/content-management/edit-blog/:id",
-        element: <EditContent/>
+        element: <PrivateRoute><EditContent/></PrivateRoute>
       }
     ]
   }

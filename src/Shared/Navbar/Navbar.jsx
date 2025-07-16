@@ -133,9 +133,14 @@ const Navbar = () => {
                 className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52"
               >
                 <li>
-                  {/* <button className="btn btn-sm btn-ghost">{user.name}</button> */}
                   <NavLink
-                    to="/dashboard"
+                    to={
+                      user?.role === "admin"
+                        ? "/dashboard/admin"
+                        : user?.role === "volunteer"
+                        ? "/dashboard/volunteer"
+                        : "/dashboard"
+                    }
                     className={({ isActive }) =>
                       `${getNavLinkClass({
                         isActive,

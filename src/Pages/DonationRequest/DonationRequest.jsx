@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import useAxiosSecure from "../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import Loading from "../../Shared/Loading/Loading";
+import { useQuery } from "@tanstack/react-query";
 
 const DonationRequest = () => {
   const axiosSecure = useAxiosSecure();
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // Load pending requests
-  useEffect(() => {
-    axiosSecure
-      .get("/donation-requests")
-      .then((res) => {
-        const pendingRequests = res.data.filter((req) => req.status === "pending");
-        setRequests(pendingRequests);
-      })
-      .catch((err) => {
-        toast.error("Failed to load donation requests");
-        console.error(err);
-      })
-      .finally(() => setLoading(false));
-  }, [axiosSecure]);
+  const {
+    data: requests = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["pending-donation-requests"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/donation-requests");
+      return res.data.filter((req) => req.status === "pending");
+    },
+    staleTime: 1000 * 60, // 1 minute
+    onError: () => toast.error("Failed to load donation requests"),
+  });
 
-  if (loading) return <Loading />;
+  if (isLoading) return <Loading />;
+  if (isError) return <p className="text-center text-red-500">Something went wrong: {error.message}</p>;
 
   return (
     <div className="p-6 max-w-6xl mx-auto">

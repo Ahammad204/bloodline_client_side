@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FaUsers, FaHandHoldingUsd, FaTint } from "react-icons/fa";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import useAuth from "../../../Hooks/UseAuth";
@@ -11,55 +11,51 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+
 const AdminDashboard = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const [donationChart, setDonationChart] = useState([]);
 
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalFunding: 0,
-    totalRequests: 0,
+  //  Query for users
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/users");
+      return res.data;
+    },
   });
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [usersRes, requestsRes, fundingRes] = await Promise.all([
-          axiosSecure.get("/users"),
-          axiosSecure.get("/donation-requests"),
-          axiosSecure.get("/funds/total"),
-        ]);
+  //  Query for donation requests
+  const { data: donationRequests = [] } = useQuery({
+    queryKey: ["donation-requests"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/donation-requests");
+      return res.data;
+    },
+  });
 
-        setStats({
-          totalUsers: usersRes.data.length,
-          totalFunding: fundingRes.data.totalAmount,
-          totalRequests: requestsRes.data.length,
-        });
-      } catch (err) {
-        console.error("Failed to fetch stats:", err);
-      }
-    };
+  // Query for total funding
+  const { data: totalFundingData = { totalAmount: 0 } } = useQuery({
+    queryKey: ["funds", "total"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/funds/total");
+      return res.data;
+    },
+  });
 
-    fetchStats();
-  }, [axiosSecure]);
-
-  useEffect(() => {
-    const fetchChartData = async () => {
-      try {
-        const res = await axiosSecure.get("/analytics/donation-requests");
-        setDonationChart([
-          { name: "Today", value: res.data.daily },
-          { name: "Last 7 Days", value: res.data.weekly },
-          { name: "This Month", value: res.data.monthly },
-        ]);
-      } catch (err) {
-        console.error("Failed to fetch chart data", err);
-      }
-    };
-
-    fetchChartData();
-  }, [axiosSecure]);
+  //  Query for chart data
+  const { data: donationChart = [] } = useQuery({
+    queryKey: ["analytics", "donation-requests"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/analytics/donation-requests");
+      return [
+        { name: "Today", value: res.data.daily },
+        { name: "Last 7 Days", value: res.data.weekly },
+        { name: "This Month", value: res.data.monthly },
+      ];
+    },
+  });
 
   return (
     <div className="p-6">
@@ -74,7 +70,7 @@ const AdminDashboard = () => {
             <FaUsers />
           </div>
           <h3 className="text-2xl font-bold">
-            <CountUp end={stats.totalUsers} duration={1.5} />
+            <CountUp end={users.length} duration={1.5} />
           </h3>
           <p className="text-gray-600 mt-1">Total Donors</p>
         </div>
@@ -85,7 +81,12 @@ const AdminDashboard = () => {
             <FaHandHoldingUsd />
           </div>
           <h3 className="text-2xl font-bold text-green-600">
-            $<CountUp end={stats.totalFunding} duration={2} separator="," />
+            $
+            <CountUp
+              end={totalFundingData.totalAmount}
+              duration={2}
+              separator=","
+            />
           </h3>
           <p className="text-gray-600 mt-1">Total Funding</p>
         </div>
@@ -96,11 +97,12 @@ const AdminDashboard = () => {
             <FaTint />
           </div>
           <h3 className="text-2xl font-bold">
-            <CountUp end={stats.totalRequests} duration={1.5} />
+            <CountUp end={donationRequests.length} duration={1.5} />
           </h3>
           <p className="text-gray-600 mt-1">Blood Donation Requests</p>
         </div>
       </div>
+
       <div className="mt-10 bg-white p-6 rounded shadow">
         <h3 className="text-xl font-bold text-[#D7263D] mb-4">
           Donation Request Overview

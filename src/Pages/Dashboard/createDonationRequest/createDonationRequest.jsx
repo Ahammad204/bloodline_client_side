@@ -1,17 +1,17 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import useAuth from "../../../Hooks/UseAuth";
 import axiosPublic from "../../../utils/axiosPublic";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "../../../Shared/Loading/Loading";
 
 const CreateDonationRequest = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
-
-  const [districts, setDistricts] = useState([]);
-  const [upazilas, setUpazilas] = useState([]);
   const [filteredUpazilas, setFilteredUpazilas] = useState([]);
   const [formData, setFormData] = useState({
     requesterName: user?.name || "",
@@ -28,11 +28,32 @@ const CreateDonationRequest = () => {
   });
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+const {
+  data: districts = [],
+  isLoading: districtsLoading,
+  error: districtsError,
+} = useQuery({
+  queryKey: ["districts"],
+  queryFn: () => axiosPublic.get("/geocode/districts").then(res => res.data),
+});
 
-  useEffect(() => {
-    axiosPublic.get("/geocode/districts").then((res) => setDistricts(res.data));
-    axiosPublic.get("/geocode/upazilas").then((res) => setUpazilas(res.data));
-  }, []);
+const {
+  data: upazilas = [],
+  isLoading: upazilasLoading,
+  error: upazilasError,
+} = useQuery({
+  queryKey: ["upazilas"],
+  queryFn: () => axiosPublic.get("/geocode/upazilas").then(res => res.data),
+});
+useEffect(() => {
+  const selected = districts.find(d => d.name === formData.district);
+  if (selected) {
+    const filtered = upazilas.filter(u => u.district_id === selected.id);
+    setFilteredUpazilas(filtered);
+  } else {
+    setFilteredUpazilas([]);
+  }
+}, [formData.district, districts, upazilas]);
 
   useEffect(() => {
     const selected = districts.find((d) => d.name === formData.district);
@@ -72,6 +93,9 @@ const CreateDonationRequest = () => {
       toast.error("Failed to create donation request");
     }
   };
+if (districtsLoading || upazilasLoading) {
+  return <Loading/>;
+}
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow rounded-lg p-6 mt-10">

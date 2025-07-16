@@ -1,20 +1,20 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import axiosPublic from "../../../utils/axiosPublic";
-import useAuth from "../../../Hooks/UseAuth";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "../../../Shared/Loading/Loading";
 
 const EditDonationRequest = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
-  const { user } = useAuth();
 
-  const [districts, setDistricts] = useState([]);
-  const [upazilas, setUpazilas] = useState([]);
-  const [filteredUpazilas, setFilteredUpazilas] = useState([]);
+  console.log(id);
+
+  const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
   const [formData, setFormData] = useState({
     requesterName: "",
     requesterEmail: "",
@@ -29,13 +29,17 @@ const EditDonationRequest = () => {
     requestMessage: "",
   });
 
-  const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+  const [districts, setDistricts] = useState([]);
+  const [upazilas, setUpazilas] = useState([]);
+  const [filteredUpazilas, setFilteredUpazilas] = useState([]);
 
+  // Fetch districts & upazilas (no need to use query here unless reused often)
   useEffect(() => {
     axiosPublic.get("/geocode/districts").then((res) => setDistricts(res.data));
     axiosPublic.get("/geocode/upazilas").then((res) => setUpazilas(res.data));
   }, []);
 
+  // Filter upazilas based on selected district
   useEffect(() => {
     const selected = districts.find((d) => d.name === formData.district);
     if (selected) {
@@ -44,18 +48,21 @@ const EditDonationRequest = () => {
     }
   }, [formData.district, districts, upazilas]);
 
-  useEffect(() => {
-    if (id) {
-      axiosSecure
-        .get(`/donation-requests/${id}`)
-        .then((res) => {
-          setFormData(res.data);
-        })
-        .catch(() => {
-          toast.error("Failed to load donation request");
-        });
-    }
-  }, [id, axiosSecure]);
+
+const { data, isLoading } = useQuery({
+  queryKey: ["donationRequest", id],
+  queryFn: async () => {
+    const res = await axiosSecure.get(`/donation-requests/${id}`);
+    return res.data; 
+  },
+  enabled: !!id, 
+});
+
+useEffect(() => {
+  if (data) {
+    setFormData(data);
+  }
+}, [data]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,7 +83,8 @@ const EditDonationRequest = () => {
     }
   };
 
-  
+  if (isLoading) return <Loading/>;
+
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow rounded-lg p-6 mt-10">
@@ -92,6 +100,7 @@ const EditDonationRequest = () => {
           disabled
           className="input input-bordered w-full bg-gray-100"
         />
+
         <input
           type="email"
           name="requesterEmail"
@@ -99,6 +108,7 @@ const EditDonationRequest = () => {
           disabled
           className="input input-bordered w-full bg-gray-100"
         />
+
         <input
           type="text"
           name="recipientName"
@@ -146,6 +156,7 @@ const EditDonationRequest = () => {
           required
           className="input input-bordered w-full"
         />
+
         <input
           type="text"
           name="address"
@@ -178,6 +189,7 @@ const EditDonationRequest = () => {
           required
           className="input input-bordered w-full"
         />
+
         <input
           type="time"
           name="donationTime"

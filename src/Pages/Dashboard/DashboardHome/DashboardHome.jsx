@@ -1,76 +1,82 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../../Hooks/UseAuth";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import {  useQuery, useQueryClient } from "@tanstack/react-query";
+import Loading from "../../../Shared/Loading/Loading";
 
 const DashboardHome = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
-  const [requests, setRequests] = useState([]);
+    const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const { data } = await axiosSecure.get("/donation-requests");
-        const myRequests = data
-          .filter((req) => req.requesterEmail === user.email)
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .slice(0, 3);
-        setRequests(myRequests);
-      } catch (err) {
-        toast.error("Failed to fetch donation requests");
-        console.log(err);
-    
-      }
-    };
-    if (user) fetchRequests();
-  }, [axiosSecure, user]);
+  const {
+    data: requests = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["myDonationRequests", user?.email],
+    enabled: !!user?.email,
 
-  const handleStatusUpdate = async (id, status) => {
+    queryFn: async () => {
+      const { data } = await axiosSecure.get("/donation-requests");
+      console.log(data);
+      // Filter and sort here as before
+      return data
+        .filter((req) => req.requesterEmail === user.email)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 3);
+    },
+  });
+
+const handleStatusUpdate = async (id, status) => {
     try {
       await axiosSecure.patch(`/donation-requests/${id}`, { status });
       toast.success(`Marked as ${status}`);
-      setRequests((prev) =>
-        prev.map((req) => (req._id === id ? { ...req, status } : req))
-      );
-    } catch {
+      queryClient.invalidateQueries(["myDonationRequests", user?.email]);
+    } catch (error) {
       toast.error("Failed to update status");
+      console.error(error);
     }
   };
 
-const handleDelete = async (id) => {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#D7263D",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!"
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await axiosSecure.delete(`/donation-requests/${id}`);
-        toast.success("Request deleted successfully");
-        setRequests((prev) => prev.filter((req) => req._id !== id));
-        Swal.fire("Deleted!", "Your request has been deleted.", "success");
-      } catch (error) {
-        toast.error("Failed to delete request");
-        Swal.fire("Error!", "Something went wrong!", "error");
-        console.log(error)
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#D7263D",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosSecure.delete(`/donation-requests/${id}`);
+          toast.success("Request deleted successfully");
+          queryClient.invalidateQueries(["myDonationRequests", user?.email]);
+          Swal.fire("Deleted!", "Your request has been deleted.", "success");
+        } catch (error) {
+          toast.error("Failed to delete request");
+          Swal.fire("Error!", "Something went wrong!", "error");
+          console.error(error);
+        }
       }
-    }
-  });
-};
+    });
+  };
+
+    if (isLoading) return <Loading/>;
+  if (isError) return toast.error(`Error ${error.message}`);
 
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-[#D7263D] mb-4">
-        Welcome, {user?.name}
+        Welcome {user.name}
       </h2>
 
       {requests.length > 0 && (
@@ -151,7 +157,9 @@ const handleDelete = async (id) => {
                         Delete
                       </button>
                       <Link to={`/dashboard/donation-request/${req._id}`}>
-                        <button className="btn btn-xs btn-primary gradient-red">View</button>
+                        <button className="btn btn-xs btn-primary gradient-red">
+                          View
+                        </button>
                       </Link>
                     </td>
                   </tr>
@@ -159,6 +167,7 @@ const handleDelete = async (id) => {
               </tbody>
             </table>
           </div>
+
           <div className="text-center mt-4">
             <Link to="/dashboard/my-donation-requests">
               <button className="btn btn-outline btn-accent gradient-red">

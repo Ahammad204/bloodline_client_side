@@ -11,29 +11,30 @@ import {
   FaRegClock,
 } from "react-icons/fa";
 import Loading from "../../../Shared/Loading/Loading";
+import { useQuery } from "@tanstack/react-query";
 
 const DonationRequestDetails = () => {
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [request, setRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const { data } = await axiosSecure.get(`/donation-requests/${id}`);
-        setRequest(data);
-      } catch (error) {
-        toast.error("Failed to fetch donation details");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDetails();
-  }, [axiosSecure, id]);
+
+  const { data, isLoading } = useQuery({
+  queryKey: ["donationRequest", id],
+  queryFn: async () => {
+    const res = await axiosSecure.get(`/donation-requests/${id}`);
+    return res.data; 
+  },
+  enabled: !!id, 
+});
+
+useEffect(() => {
+  if (data) {
+   setRequest(data);
+  }
+}, [data]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -73,7 +74,7 @@ const DonationRequestDetails = () => {
     }
   };
 
-  if (loading)
+  if ( isLoading)
     return (
       <div className="text-center mt-10">
         <Loading />

@@ -9,12 +9,12 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  console.log(user)
-
-  //  Register a new user
+  //  Register
   const register = async (userData) => {
     try {
-      const res = await axiosPublic.post("/api/register", userData ,{ withCredentials: true });
+      const res = await axiosPublic.post("/api/register", userData, {
+        withCredentials: true,
+      });
       if (res.status === 201 || res.status === 200) {
         setUser(res.data.user);
         return res;
@@ -26,14 +26,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  //  Login a user
+  //  Login
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const res = await axiosPublic.post("/api/login", { email, password }, { withCredentials: true });
+      const res = await axiosPublic.post(
+        "/api/login",
+        { email, password },
+        { withCredentials: true }
+      );
       if (res.status === 200) {
         setUser(res.data.user);
-    
+        return res;
       }
     } catch (err) {
       toast.error("Login failed");
@@ -43,7 +47,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout
+  //  Logout
   const logout = async () => {
     try {
       await axiosPublic.post("/api/logout", {}, { withCredentials: true });
@@ -51,19 +55,21 @@ const AuthProvider = ({ children }) => {
       toast.success("Logged out");
     } catch (err) {
       toast.error("Logout failed");
-      console.log(err);
+      console.error(err);
     }
   };
 
-  //  Fetch user on refresh
+  //  Check auth on refresh
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axiosPublic.get("/api/me", { withCredentials: true });
+        const res = await axiosPublic.get("/api/me", {
+          withCredentials: true,
+        });
         setUser(res.data.user);
       } catch (err) {
         setUser(null);
-        console.log(err);
+        console.error("Auth check failed", err);
       } finally {
         setLoading(false);
       }
@@ -79,7 +85,11 @@ const AuthProvider = ({ children }) => {
     loading,
   };
 
-  return <AuthContext.Provider value={authValues}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authValues}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;
