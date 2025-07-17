@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import Lottie from "lottie-react";
 import loginAnimation from "../../assets/login.json";
-import useAuth from "../../Hooks/UseAuth";
+
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import useAuth from "../../Hooks/UseAuth";
 
 const Login = () => {
-  const { login } = useAuth();
+  // const { login } = useAuth();
+  const {login} = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const location = useLocation();
