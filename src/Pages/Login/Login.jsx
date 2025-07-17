@@ -6,6 +6,7 @@ import loginAnimation from "../../assets/login.json";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import useAuth from "../../Hooks/UseAuth";
 
+
 const Login = () => {
   // const { login } = useAuth();
   const {login} = useAuth();
