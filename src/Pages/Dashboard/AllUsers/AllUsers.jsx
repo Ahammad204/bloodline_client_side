@@ -16,10 +16,11 @@ import {
   Button,
   Avatar,
 } from "@material-tailwind/react";
-import useAuth from "../../../Hooks/UseAuth";
+
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../Shared/Loading/Loading";
+import useAuth from "../../../Hooks/UseAuth";
 
 const AllUsers = () => {
   const axiosSecure = useAxiosSecure();

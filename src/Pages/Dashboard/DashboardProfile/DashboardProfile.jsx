@@ -1,9 +1,10 @@
 
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import useAuth from "../../../Hooks/UseAuth";
+
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import axiosPublic from "../../../utils/axiosPublic";
+import useAuth from "../../../Hooks/UseAuth";
 
 const DashboardProfile = () => {
   const { user } = useAuth();

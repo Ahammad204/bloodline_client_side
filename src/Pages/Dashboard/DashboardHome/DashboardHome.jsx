@@ -1,11 +1,12 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../../../Hooks/UseAuth";
+
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import {  useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "../../../Shared/Loading/Loading";
+import useAuth from "../../../Hooks/UseAuth";
 
 const DashboardHome = () => {
   const { user } = useAuth();

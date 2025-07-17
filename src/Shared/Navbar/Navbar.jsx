@@ -2,6 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/navlogo.png";
 import useAuth from "../../Hooks/UseAuth";
 
+
 const Navbar = () => {
   const { user, logout } = useAuth();
   console.log("from navbar", user);

@@ -1,7 +1,7 @@
 import React from "react";
 import { FaUsers, FaHandHoldingUsd, FaTint } from "react-icons/fa";
 import useAxiosSecure from "../../../utils/useAxiosSecure";
-import useAuth from "../../../Hooks/UseAuth";
+
 import CountUp from "react-countup";
 import {
   BarChart,
@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
+import useAuth from "../../../Hooks/UseAuth";
 
 const AdminDashboard = () => {
   const axiosSecure = useAxiosSecure();

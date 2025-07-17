@@ -3,10 +3,11 @@ import toast from "react-hot-toast";
 import Lottie from "lottie-react";
 import { Link, useNavigate } from "react-router-dom";
 import registerAnimation from "../../assets/register.json";
-import useAuth from "../../Hooks/UseAuth";
+
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import axiosPublic from "../../utils/axiosPublic";
+import useAuth from "../../Hooks/UseAuth";
 
 const Register = () => {
   const { register } = useAuth();

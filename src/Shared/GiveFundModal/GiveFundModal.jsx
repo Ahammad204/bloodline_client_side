@@ -4,6 +4,7 @@ import useAxiosSecure from "../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
 import useAuth from "../../Hooks/UseAuth";
 
+
 const GiveFundModal = ({ onClose }) => {
   const stripe = useStripe();
   const elements = useElements();
