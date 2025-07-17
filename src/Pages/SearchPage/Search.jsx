@@ -38,18 +38,28 @@ const Search = () => {
   });
 
   //  Fetch all users (donors)
-  const {
-    data: donors = [],
-    isFetching,
-    refetch: refetchDonors,
-  } = useQuery({
+  // const {
+  //   data: donors = [],
+  //   isFetching,
+  //   refetch: refetchDonors,
+  // } = useQuery({
+  //   queryKey: ["users"],
+  //   queryFn: async () => {
+  //     const res = await axiosSecure.get("/users");
+  //     return res.data;
+  //   },
+  //   enabled: false, // only run when user clicks search
+  // });
+  
+    const { data, isLoading, refetch:refetchDonors,isFetching } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/users");
-      return res.data;
+      const res = await axiosSecure.get(`/users`);
+      return res.data; 
     },
-    enabled: false, // only run when user clicks search
+    enabled: false,
   });
+
 
   useEffect(() => {
     if (districtId) {

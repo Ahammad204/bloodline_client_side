@@ -1,6 +1,6 @@
 import { FaHandHoldingMedical, FaHome, FaUsers } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
-import { FaHandHoldingDollar, FaPaw } from "react-icons/fa6";
+import { FaHandHoldingUsd } from "react-icons/fa";
 import useAuth from "../../Hooks/UseAuth";
 import { CgProfile } from "react-icons/cg";
 import useAdmin from "../../Hooks/useAdmin";
@@ -37,19 +37,19 @@ const Dashboard = () => {
               </li>
               <li>
                 <NavLink to="/dashboard/all-blood-donation-request">
-                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  <FaHandHoldingUsd></FaHandHoldingUsd>
                   All Blood Donation Request
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/content-management">
-                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  <FaHandHoldingUsd></FaHandHoldingUsd>
                   Content Management
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/content-management/add-blog">
-                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  <FaHandHoldingUsd></FaHandHoldingUsd>
                   Add Blog
                 </NavLink>
               </li>
@@ -64,13 +64,13 @@ const Dashboard = () => {
               <hr />
               <li>
                 <NavLink to="/dashboard/all-blood-donation-request">
-                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  <FaHandHoldingUsd></FaHandHoldingUsd>
                   All Blood Donation Request
                 </NavLink>
               </li>
                 <li>
                 <NavLink to="/dashboard/content-management">
-                  <FaHandHoldingDollar></FaHandHoldingDollar>
+                  <FaHandHoldingUsd></FaHandHoldingUsd>
                   Content Management
                 </NavLink>
               </li>
