@@ -20,7 +20,7 @@ import {
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../Shared/Loading/Loading";
-import useAuth from "../../../Hooks/UseAuth";
+import useAuth from "../../../Hooks/useAuth";
 
 const AllUsers = () => {
   const axiosSecure = useAxiosSecure();

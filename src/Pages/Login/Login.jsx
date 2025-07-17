@@ -4,7 +4,9 @@ import Lottie from "lottie-react";
 import loginAnimation from "../../assets/login.json";
 
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import useAuth from "../../Hooks/UseAuth";
+import useAuth from "../../Hooks/useAuth";
+
+
 
 
 

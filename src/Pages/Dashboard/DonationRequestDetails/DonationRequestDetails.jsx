@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import Loading from "../../../Shared/Loading/Loading";
 import { useQuery } from "@tanstack/react-query";
-import useAuth from "../../../Hooks/UseAuth";
+import useAuth from "../../../Hooks/useAuth";
 
 const DonationRequestDetails = () => {
   const { id } = useParams();

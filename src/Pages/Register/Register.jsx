@@ -7,7 +7,7 @@ import registerAnimation from "../../assets/register.json";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import axiosPublic from "../../utils/axiosPublic";
-import useAuth from "../../Hooks/UseAuth";
+import useAuth from "../../Hooks/useAuth";
 
 const Register = () => {
   const { register } = useAuth();

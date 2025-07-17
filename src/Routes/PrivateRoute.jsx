@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router";
 
 import Loading from "../Shared/Loading/Loading";
-import useAuth from "../Hooks/UseAuth";
+import useAuth from "../Hooks/useAuth";
 
 
 

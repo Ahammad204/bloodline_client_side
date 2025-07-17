@@ -2,7 +2,7 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import useAxiosSecure from "../../utils/useAxiosSecure";
 import toast from "react-hot-toast";
-import useAuth from "../../Hooks/UseAuth";
+import useAuth from "../../Hooks/useAuth";
 
 
 const GiveFundModal = ({ onClose }) => {

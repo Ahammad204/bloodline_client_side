@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 import useAxiosSecure from "../../../utils/useAxiosSecure";
 import axiosPublic from "../../../utils/axiosPublic";
-import useAuth from "../../../Hooks/UseAuth";
+import useAuth from "../../../Hooks/useAuth";
 
 const DashboardProfile = () => {
   const { user } = useAuth();
