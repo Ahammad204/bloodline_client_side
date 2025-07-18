@@ -1,22 +1,12 @@
 # 🩸 Bloodline - Blood Donation Application
 
 **Live Site**: [http://localhost:5173](http://localhost:5173)  
-**Admin Email**: Admin@gmail.com  
-**Admin Password**: Admin7788.
+
 
 ## 📌 Overview
 
 **Bloodline** is a full-stack blood donation management system built using the MERN stack (MongoDB, Express.js, React, Node.js). It helps bridge the gap between blood donors and recipients by providing an efficient and user-friendly interface for creating, tracking, and fulfilling donation requests.
 
----
-## 📑 Admin Access
-
-You can use the following credentials to log in as admin:
-
-- **Email**: `Admin@gmail.com`
-- **Password**: `Admin7788`
-
----
 
 ## 🚀 Key Features
 
@@ -121,6 +111,6 @@ If you'd like to contribute, feel free to fork the repo and submit a pull reques
 
 ## 📧 Contact
 
-For questions or feedback, please email: [ummesadiasayti@gmail.com](mailto:ummesadiasayti@gmail.com)
+For questions or feedback, please email: [ahammadcode@gmail.com](mailto:ahammadcode@gmail.com)
 
 ---
