@@ -1,6 +1,6 @@
 # 🩸 Bloodline - Blood Donation Application
 
-**Live Site**: [http://localhost:5173](http://localhost:5173)  
+**Live Site**: [https://bloodlines.netlify.app](https://bloodlines.netlify.app)  
 
 
 ## 📌 Overview
